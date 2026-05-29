@@ -1,9 +1,13 @@
 :root {
   color-scheme: light;
+  --brand-green: #2f9e44; /* verde da logo */
+  --brand-green-dark: #1f7a31;
+  --brand-yellow: #ffd24d; /* amarelo da logo */
+  --muted: #6c757d;
 }
 
 body {
-  background: #f4f7fb;
+  background: #f8fbf8;
   color: #212529;
 }
 
@@ -20,5 +24,45 @@ footer {
 }
 
 .table-hover tbody tr:hover {
-  background: rgba(13, 110, 253, 0.05);
+  background: rgba(47,158,68,0.06);
 }
+
+/* Brand buttons and helpers */
+.bg-brand {
+  background: linear-gradient(90deg,var(--brand-green),var(--brand-green-dark));
+  color: #fff !important;
+}
+.btn-primary-custom {
+  background: var(--brand-green);
+  border-color: var(--brand-green);
+  color: #fff;
+}
+.btn-primary-custom:hover, .btn-primary-custom:focus {
+  background: var(--brand-green-dark);
+  border-color: var(--brand-green-dark);
+}
+.btn-accent {
+  background: var(--brand-yellow);
+  color: #222;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.btn-accent:hover { filter: brightness(0.98); }
+
+.logo-circle {
+  display:inline-block;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--brand-green);color:#fff;font-weight:700;
+  text-align:center;line-height:40px;font-size:18px;margin-right:8px;
+}
+
+.hero {
+  background: linear-gradient(180deg, rgba(47,158,68,0.04), transparent);
+  padding:3.5rem 1rem;
+  border-radius:8px;
+}
+
+.card-title { color:var(--brand-green-dark); }
+
+.text-muted { color: var(--muted) !important; }
+
+.shadow-accent { box-shadow: 0 4px 12px rgba(47,158,68,0.06) }

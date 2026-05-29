@@ -5,13 +5,16 @@ from .models import Animal, Adotante
 class AnimalForm(forms.ModelForm):
     class Meta:
         model = Animal
-        fields = ['tipo', 'nome', 'genero', 'idade', 'castrado']
+        fields = ['especie', 'nome', 'sexo', 'esterilizacao', 'nascimento', 'raca', 'pelagem', 'status']
         widgets = {
-            'tipo': forms.Select(attrs={'class': 'form-select'}),
+            'especie': forms.Select(attrs={'class': 'form-select'}),
             'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do animal'}),
-            'genero': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Masculino / Feminino'}),
-            'idade': forms.NumberInput(attrs={'class': 'form-control', 'min': 0}),
-            'castrado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
+            'sexo': forms.Select(attrs={'class': 'form-select'}),
+            'esterilizacao': forms.Select(attrs={'class': 'form-select'}),
+            'nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'raca': forms.Select(attrs={'class': 'form-select'}),
+            'pelagem': forms.Select(attrs={'class': 'form-select'}),
+            'status': forms.Select(attrs={'class': 'form-select'}),
         }
 
 

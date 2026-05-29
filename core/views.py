@@ -8,7 +8,7 @@ def home(request):
 
 
 def animal_list(request):
-    animais = Animal.objects.all().order_by('tipo', 'nome')
+    animais = Animal.objects.all().order_by('especie', 'nome')
     return render(request, 'animal_list.html', {'animais': animais})
 
 

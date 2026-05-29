@@ -4,7 +4,7 @@ from .models import Animal, Adotante
 
 @admin.register(Animal)
 class AnimalAdmin(admin.ModelAdmin):
-    list_display = ["tipo", "nome", "idade", "genero", "castrado"]
+    list_display = ["nome", "especie", "raca", "sexo", "status"]
 
 
 @admin.register(Adotante)

@@ -1,21 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
       <h2>Lista de Adotantes</h2>
       <p class="text-muted">Pessoas interessadas em adotar animais cadastradas no sistema.</p>
     </div>
-    <a class="btn btn-primary" href="{% url 'core:adotante_create' %}">Cadastrar adotante</a>
+    <a class="btn btn-primary-custom" href="{% url 'core:adotante_create' %}">Cadastrar adotante</a>
   </div>
 
   {% if adotantes %}
-    <div class="list-group shadow-sm rounded bg-white p-2">
+    <div class="list-group shadow-accent rounded bg-white p-2">
       {% for adotante in adotantes %}
-      <div class="list-group-item">
-        <h5 class="mb-1">{{ adotante.nome }}</h5>
-        <p class="mb-1">{{ adotante.email }} — {{ adotante.telefone }}</p>
-        <small class="text-muted">Cadastrado em {{ adotante.criado_em|date:"d/m/Y H:i" }}</small>
+      <div class="list-group-item d-flex justify-content-between align-items-start">
+        <div>
+          <h5 class="mb-1">{{ adotante.nome }}</h5>
+          <p class="mb-1">{{ adotante.email }} — {{ adotante.telefone }}</p>
+        </div>
+        <small class="text-muted">{{ adotante.criado_em|date:"d/m/Y" }}</small>
       </div>
       {% endfor %}
     </div>
