@@ -1,4 +1,11 @@
 from django.db import models
+from io import BytesIO
+from django.core.files.base import ContentFile
+
+try:
+    from PIL import Image
+except Exception:
+    Image = None
 
 
 ESPECIE_CHOICE = (
@@ -44,15 +51,59 @@ ESTERILIZACAO_CHOICE = (
 class Animal(models.Model):
     especie = models.CharField('espécie', max_length=20, choices=ESPECIE_CHOICE, default="CACHORRO")
     nome = models.CharField('nome', max_length=80)
+    foto = models.ImageField('foto', upload_to='animals/', null=True, blank=True)
     sexo = models.CharField('sexo', max_length=20, choices=SEXO_CHOICE, default="MACHO")
     esterilizacao = models.CharField('esterilização', max_length=20, choices=ESTERILIZACAO_CHOICE, default="NAO")
     nascimento = models.DateField('data de nascimento', null=True, blank=True)
     raca = models.CharField('raça', max_length=80, choices=RACA_CHOICE, default="SRD")
     pelagem = models.CharField('pelagem', max_length=20, choices=PELAGEM_CHOICE, default="CURTA")
     status = models.CharField('status', max_length=20, choices=STATUS_CHOICE, default="VIVO")
+    adotado = models.BooleanField('adotado', default=False)
+    adotante = models.ForeignKey('core.Adotante', on_delete=models.SET_NULL, null=True, blank=True, related_name='animais')
 
     def __str__(self):
-        return f"{self.nome} ({self.tipo})"
+        return f"{self.nome} ({self.especie})"
+
+    def save(self, *args, **kwargs):
+        # call original save first to ensure self.foto has a file
+        super().save(*args, **kwargs)
+        if not self.foto:
+            return
+        if Image is None:
+            return
+        try:
+            img = Image.open(self.foto.path)
+        except Exception:
+            # fallback: try opening from file-like
+            try:
+                self.foto.open()
+                img = Image.open(self.foto)
+            except Exception:
+                return
+
+        max_size = (800, 800)
+        # Pillow 10 removed ANTIALIAS; use Resampling.LANCZOS when available
+        try:
+            resample_filter = Image.Resampling.LANCZOS
+        except Exception:
+            resample_filter = getattr(Image, 'LANCZOS', Image.BICUBIC)
+        img.thumbnail(max_size, resample_filter)
+
+        buffer = BytesIO()
+        format = 'JPEG' if img.mode in ('RGB', 'L', 'P') else 'PNG'
+        if img.mode in ('RGBA', 'LA') and format == 'JPEG':
+            # convert to RGB to save as JPEG
+            background = Image.new('RGB', img.size, (255, 255, 255))
+            background.paste(img, mask=img.split()[3])
+            img = background
+            format = 'JPEG'
+        img.save(buffer, format=format, quality=85)
+        filecontent = ContentFile(buffer.getvalue())
+        name = self.foto.name
+        # overwrite stored file
+        self.foto.save(name, filecontent, save=False)
+        buffer.close()
+        super().save(update_fields=['foto'])
 
 
 class Adotante(models.Model):

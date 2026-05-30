@@ -9,6 +9,15 @@
     <a class="btn btn-primary-custom" href="{% url 'core:adotante_create' %}">Cadastrar adotante</a>
   </div>
 
+  <form method="get" class="row g-2 mb-3">
+    <div class="col-auto">
+      <input type="search" name="q" value="{{ q|default:'' }}" class="form-control" placeholder="Pesquisar nome, email ou telefone">
+    </div>
+    <div class="col-auto">
+      <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+    </div>
+  </form>
+
   {% if adotantes %}
     <div class="list-group shadow-accent rounded bg-white p-2">
       {% for adotante in adotantes %}
@@ -16,8 +25,15 @@
         <div>
           <h5 class="mb-1">{{ adotante.nome }}</h5>
           <p class="mb-1">{{ adotante.email }} — {{ adotante.telefone }}</p>
+          {% if adotante.animais.exists %}
+          <p class="mb-1"><strong>Animais adotados:</strong> {% for animal in adotante.animais.all %}{{ animal.nome }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+          {% endif %}
         </div>
-        <small class="text-muted">{{ adotante.criado_em|date:"d/m/Y" }}</small>
+        <div class="text-end">
+          <small class="text-muted d-block">{{ adotante.criado_em|date:"d/m/Y" }}</small>
+          <a href="{% url 'core:adotante_edit' adotante.pk %}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+          <a href="{% url 'core:adotante_delete' adotante.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+        </div>
       </div>
       {% endfor %}
     </div>

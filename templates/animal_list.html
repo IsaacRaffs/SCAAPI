@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="d-flex justify-content-between align-items-center mb-4">
@@ -8,6 +9,15 @@
   </div>
   <a class="btn btn-primary-custom" href="{% url 'core:animal_create' %}">Cadastrar novo</a>
 </div>
+
+<form method="get" class="row g-2 mb-3">
+  <div class="col-auto">
+    <input type="search" name="q" value="{{ q|default:'' }}" class="form-control" placeholder="Pesquisar nome, espécie ou raça">
+  </div>
+  <div class="col-auto">
+    <button class="btn btn-outline-secondary" type="submit">Buscar</button>
+  </div>
+</form>
 
 {% if animais %}
 <div class="table-responsive shadow-accent rounded bg-white p-3">
@@ -21,18 +31,34 @@
         <th>Esterilização</th>
         <th>Nascimento</th>
         <th>Status</th>
+        <th>Adotado</th>
+        <th>Adotante</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody>
       {% for animal in animais %}
       <tr>
-        <td>{{ animal.nome }}</td>
+        <td>
+          {% if animal.foto %}
+            <img src="{{ animal.foto.url }}" alt="{{ animal.nome }}" style="height:48px;width:48px;object-fit:cover;border-radius:6px;margin-right:8px;" class="me-2">
+          {% else %}
+            <img src="{% static 'images/placeholder.svg' %}" alt="sem foto" style="height:48px;width:48px;object-fit:cover;border-radius:6px;margin-right:8px;" class="me-2">
+          {% endif %}
+          {{ animal.nome }}
+        </td>
         <td>{{ animal.get_especie_display }}</td>
         <td>{{ animal.get_raca_display }}</td>
         <td>{{ animal.get_sexo_display }}</td>
         <td>{{ animal.get_esterilizacao_display }}</td>
         <td>{{ animal.nascimento|date:"d/m/Y" }}</td>
         <td>{{ animal.get_status_display }}</td>
+        <td>{{ animal.adotado|yesno:'Sim,Não' }}</td>
+        <td>{% if animal.adotante %}{{ animal.adotante.nome }}{% else %}-{% endif %}</td>
+        <td class="text-end">
+          <a href="{% url 'core:animal_edit' animal.pk %}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
+          <a href="{% url 'core:animal_delete' animal.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
+        </td>
       </tr>
       {% endfor %}
     </tbody>

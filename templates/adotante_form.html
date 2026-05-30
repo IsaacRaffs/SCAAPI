@@ -5,8 +5,13 @@
     <div class="col-lg-7">
       <div class="card shadow-sm">
         <div class="card-body">
+          {% if adotante %}
+          <h2 class="card-title mb-3">Editar Adotante</h2>
+          <p class="text-muted">Altere os dados e salve para atualizar o registro.</p>
+          {% else %}
           <h2 class="card-title mb-3">Cadastrar Adotante</h2>
           <p class="text-muted">Preencha os dados do adotante para que possamos registrar interessados.</p>
+          {% endif %}
 
           <form method="post" novalidate>
             {% csrf_token %}
@@ -38,6 +43,15 @@
               {{ form.endereco.label_tag }}
               {{ form.endereco }}
               {% for error in form.endereco.errors %}
+                <div class="invalid-feedback d-block">{{ error }}</div>
+              {% endfor %}
+            </div>
+
+            <div class="mb-3">
+              {{ form.animais.label_tag }}
+              {{ form.animais }}
+              <div class="form-text">Selecione um ou mais animais para este adotante.</div>
+              {% for error in form.animais.errors %}
                 <div class="invalid-feedback d-block">{{ error }}</div>
               {% endfor %}
             </div>
