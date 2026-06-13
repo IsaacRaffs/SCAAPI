@@ -30,7 +30,6 @@
           {% endif %}
         </div>
         <div class="text-end">
-          <small class="text-muted d-block">{{ adotante.criado_em|date:"d/m/Y" }}</small>
           <a href="{% url 'core:adotante_edit' adotante.pk %}" class="btn btn-sm btn-outline-primary me-1">Editar</a>
           <a href="{% url 'core:adotante_delete' adotante.pk %}" class="btn btn-sm btn-outline-danger">Excluir</a>
         </div>

@@ -43,19 +43,36 @@ class AnimalForm(forms.ModelForm):
         label='Fotos adicionais',
         widget=MultiFileInput(attrs={'class': 'form-control', 'multiple': True})
     )
+    chegada = forms.DateField(
+        required=False,
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'autocomplete': 'off'}),
+        input_formats=['%d/%m/%Y']
+    )
+    nascimento = forms.DateField(
+        required=False,
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'autocomplete': 'off'}),
+        input_formats=['%d/%m/%Y']
+    )
+    data_obito = forms.DateField(
+        required=False,
+        widget=forms.DateInput(format='%d/%m/%Y', attrs={'class': 'form-control datepicker', 'placeholder': 'dd/mm/aaaa', 'autocomplete': 'off'}),
+        input_formats=['%d/%m/%Y']
+    )
 
     class Meta:
         model = Animal
-        fields = ['especie', 'nome', 'foto', 'sexo', 'esterilizacao', 'nascimento', 'raca', 'pelagem', 'status', 'adotado']
+        fields = ['especie', 'nome', 'foto', 'sexo', 'esterilizacao', 'chegada', 'nascimento', 'raca', 'pelagem', 'status', 'data_obito', 'adotado']
+        labels = {
+            'esterilizacao': 'Castrado',
+        }
         widgets = {
             'especie': forms.Select(attrs={'class': 'form-select'}),
             'nome': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nome do animal'}),
-            'foto': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+            'foto': forms.FileInput(attrs={'class': 'form-control'}),
             'sexo': forms.Select(attrs={'class': 'form-select'}),
             'esterilizacao': forms.Select(attrs={'class': 'form-select'}),
-            'nascimento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'raca': forms.Select(attrs={'class': 'form-select'}),
-            'pelagem': forms.Select(attrs={'class': 'form-select'}),
+            'raca': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Poodle, SRD, Labrador'}),
+            'pelagem': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: Pelagem Curta, Pelagem Longa'}),
             'status': forms.Select(attrs={'class': 'form-select'}),
             'adotado': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
@@ -64,12 +81,15 @@ class AnimalForm(forms.ModelForm):
         foto = self.cleaned_data.get('foto')
         if not foto:
             return foto
+        # Existing file objects may not have content_type and should be preserved.
+        content_type = getattr(foto, 'content_type', None)
+        if not content_type:
+            return foto
         # Validate file size (<= 3MB)
         max_size = 3 * 1024 * 1024
         if foto.size > max_size:
             raise forms.ValidationError('A imagem deve ter no máximo 3 MB.')
         # Validate content type
-        content_type = getattr(foto, 'content_type', '')
         allowed = ['image/jpeg', 'image/png']
         if content_type not in allowed:
             raise forms.ValidationError('Formato inválido. Use JPG ou PNG.')
@@ -91,6 +111,14 @@ class AnimalForm(forms.ModelForm):
             if content_type not in allowed:
                 raise forms.ValidationError('Formato inválido. Use JPG ou PNG para todas as imagens.')
         return images
+
+    def save(self, commit=True):
+        animal = super().save(commit=False)
+        if self.instance and self.instance.pk and self.cleaned_data.get('foto') is None:
+            animal.foto = self.instance.foto
+        if commit:
+            animal.save()
+        return animal
 
 
 class AdotanteForm(forms.ModelForm):

@@ -48,6 +48,11 @@
             </div>
 
             <div class="mb-3">
+              <label for="search-animais" class="form-label">Pesquisar Animais</label>
+              <input type="search" id="search-animais" class="form-control" placeholder="Digite o nome do animal...">
+            </div>
+
+            <div class="mb-3">
               {{ form.animais.label_tag }}
               {{ form.animais }}
               <div class="form-text">Selecione um ou mais animais para este adotante.</div>
@@ -55,6 +60,19 @@
                 <div class="invalid-feedback d-block">{{ error }}</div>
               {% endfor %}
             </div>
+
+            <script>
+              document.getElementById('search-animais').addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                const selectElement = document.getElementById('id_animais');
+                const options = selectElement.querySelectorAll('option');
+                
+                options.forEach(option => {
+                  const text = option.textContent.toLowerCase();
+                  option.style.display = text.includes(searchValue) ? 'block' : 'none';
+                });
+              });
+            </script>
 
             <div class="d-flex gap-2">
               <button class="btn btn-primary-custom" type="submit">Salvar</button>

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Animal, Adotante, AnimalImage
 from django.db import models
 from .forms import AnimalForm, AdotanteForm
@@ -45,6 +45,22 @@ def animal_edit(request, pk):
     else:
         form = AnimalForm(instance=animal)
     return render(request, 'animal_form.html', {'form': form, 'animal': animal})
+
+
+def animal_image_delete(request, animal_pk, image_pk):
+    image = get_object_or_404(AnimalImage, pk=image_pk, animal__pk=animal_pk)
+    if request.method == 'POST':
+        image.delete()
+    return redirect('core:animal_edit', pk=animal_pk)
+
+
+def animal_foto_delete(request, pk):
+    animal = get_object_or_404(Animal, pk=pk)
+    if request.method == 'POST' and animal.foto:
+        animal.foto.delete(save=False)
+        animal.foto = None
+        animal.save(update_fields=['foto'])
+    return redirect('core:animal_edit', pk=pk)
 
 
 def animal_delete(request, pk):

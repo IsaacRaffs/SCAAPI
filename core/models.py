@@ -1,3 +1,5 @@
+from datetime import date
+
 from django.db import models
 from io import BytesIO
 from django.core.files.base import ContentFile
@@ -87,15 +89,27 @@ class Animal(models.Model):
     foto = models.ImageField('foto', upload_to='animals/', null=True, blank=True)
     sexo = models.CharField('sexo', max_length=20, choices=SEXO_CHOICE, default="MACHO")
     esterilizacao = models.CharField('esterilização', max_length=20, choices=ESTERILIZACAO_CHOICE, default="NAO")
+    chegada = models.DateField('data de chegada', null=True, blank=True)
     nascimento = models.DateField('data de nascimento', null=True, blank=True)
-    raca = models.CharField('raça', max_length=80, choices=RACA_CHOICE, default="SRD")
-    pelagem = models.CharField('pelagem', max_length=20, choices=PELAGEM_CHOICE, default="CURTA")
+    raca = models.CharField('raça', max_length=120, blank=True)
+    pelagem = models.CharField('pelagem', max_length=80, blank=True)
     status = models.CharField('status', max_length=20, choices=STATUS_CHOICE, default="VIVO")
+    data_obito = models.DateField('data de óbito', null=True, blank=True)
     adotado = models.BooleanField('adotado', default=False)
     adotante = models.ForeignKey('core.Adotante', on_delete=models.SET_NULL, null=True, blank=True, related_name='animais')
 
     def __str__(self):
         return f"{self.nome} ({self.especie})"
+
+    @property
+    def idade(self):
+        if not self.nascimento:
+            return None
+        today = date.today()
+        years = today.year - self.nascimento.year
+        if (today.month, today.day) < (self.nascimento.month, self.nascimento.day):
+            years -= 1
+        return years
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -115,6 +129,16 @@ class AnimalImage(models.Model):
 
     def __str__(self):
         return f"Imagem de {self.animal.nome}"
+
+    def delete(self, *args, **kwargs):
+        if self.imagem and self.imagem.name:
+            storage = self.imagem.storage
+            path = self.imagem.path
+            super().delete(*args, **kwargs)
+            if storage.exists(path):
+                storage.delete(path)
+        else:
+            super().delete(*args, **kwargs)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
