@@ -394,5 +394,22 @@
     "app_label": "core",
     "model": "animalimage"
   }
+},
+{
+  "model": "core.animal",
+  "pk": 17,
+  "fields": {
+    "especie": "CACHORRO",
+    "nome": "bosta",
+    "foto": "",
+    "sexo": "MACHO",
+    "esterilizacao": "NAO",
+    "nascimento": null,
+    "raca": "SRD",
+    "pelagem": "CURTA",
+    "status": "VIVO",
+    "adotado": false,
+    "adotante": null
+  }
 }
 ]
