@@ -404,10 +404,12 @@
     "foto": "animals/animals/_gold_ship_square_face_icon__W9SGYPg.jpg",
     "sexo": "MACHO",
     "esterilizacao": "NAO",
+    "chegada": null,
     "nascimento": null,
     "raca": "SRD",
     "pelagem": "CURTA",
     "status": "VIVO",
+    "data_obito": null,
     "adotado": false,
     "adotante": null
   }
